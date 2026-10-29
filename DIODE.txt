@@ -1,0 +1,473 @@
+If θ=π:Goto U
+0→θ
+ClrHome
+Normal
+Float
+Lbl M
+Menu("DIODE SOLVER","SHOCKLEY I-V",A,"SERIES R+DIODE",B,"ZENER REGULATOR",C,"RECTIFIER",D,"SMALL-SIGNAL RD",F,"QUIT",Q)
+Lbl A
+ClrHome
+Disp "SHOCKLEY EQN"
+Input "N (1-2)=",Str1
+π→θ
+prgmDIODE
+Ans→N
+Input "T (C)=",Str1
+π→θ
+prgmDIODE
+Ans→T
+8.617333ᴇ⁻5(T+273.15)→W
+Menu("GIVEN","VD, FIND ID",A1,"ID, FIND VD",A2,"V1 I1 I2, FIND V2",A3,"VD ID, FIND IS",A4)
+Lbl A1
+Input "IS (A)=",Str1
+π→θ
+prgmDIODE
+Ans→S
+Input "VD (V)=",Str1
+π→θ
+prgmDIODE
+Ans→V
+S(𝑒^(V/(NW))-1)→I
+Goto A5
+Lbl A2
+Input "IS (A)=",Str1
+π→θ
+prgmDIODE
+Ans→S
+Input "ID (A)=",Str1
+π→θ
+prgmDIODE
+Ans→I
+NWln(I/S+1)→V
+Goto A5
+Lbl A4
+Input "VD (V)=",Str1
+π→θ
+prgmDIODE
+Ans→V
+Input "ID (A)=",Str1
+π→θ
+prgmDIODE
+Ans→I
+I/(𝑒^(V/(NW))-1)→S
+Lbl A5
+ClrHome
+Output(1,1,"VT (MV)")
+Output(1,11,1000W)
+Output(2,1,"VD (V)")
+Output(2,11,V)
+Output(3,1,"ID (MA)")
+Output(3,11,1000I)
+Output(4,1,"IS (A)")
+Output(4,11,S)
+Pause 
+Goto M
+Lbl A3
+Input "V1 (V)=",Str1
+π→θ
+prgmDIODE
+Ans→U
+Input "I1 (A)=",Str1
+π→θ
+prgmDIODE
+Ans→I
+Input "I2 (A)=",Str1
+π→θ
+prgmDIODE
+Ans→J
+U+NWln(J/I)→V
+ClrHome
+Output(1,1,"VT (MV)")
+Output(1,11,1000W)
+Output(2,1,"V2 (V)")
+Output(2,11,V)
+Output(3,1,"DV (MV)")
+Output(3,11,1000(V-U))
+Output(4,1,"MV/DECADE")
+Output(4,11,1000NWln(10))
+Pause 
+Goto M
+Lbl B
+0→G
+ClrHome
+Disp "VS - R - DIODE"
+Input "VS (V)=",Str1
+π→θ
+prgmDIODE
+Ans→E
+Input "R (OHM)=",Str1
+π→θ
+prgmDIODE
+Ans→R
+Menu("DIODE MODEL","IDEAL",B1,"CONSTANT VON",B2,"VON + RD",B3,"EXPONENTIAL",B4)
+Lbl B1
+0→P
+0→D
+Goto B5
+Lbl B2
+Input "VON (V)=",Str1
+π→θ
+prgmDIODE
+Ans→P
+0→D
+Goto B5
+Lbl B3
+Input "VON (V)=",Str1
+π→θ
+prgmDIODE
+Ans→P
+Input "RD (OHM)=",Str1
+π→θ
+prgmDIODE
+Ans→D
+Lbl B5
+If E>P
+Then
+(E-P)/(R+D)→I
+P+ID→V
+Else
+0→I
+E→V
+End
+Goto B6
+Lbl B4
+1→G
+Input "IS (A)=",Str1
+π→θ
+prgmDIODE
+Ans→S
+Input "N=",Str1
+π→θ
+prgmDIODE
+Ans→N
+Input "T (C)=",Str1
+π→θ
+prgmDIODE
+Ans→T
+8.617333ᴇ⁻5(T+273.15)→W
+min(E,0)→L
+max(0,min(E,200NW))→H
+For(K,1,60)
+(L+H)/2→V
+RS(𝑒^(V/(NW))-1)+V-E→F
+If F>0
+Then
+V→H
+Else
+V→L
+End
+End
+(E-V)/R→I
+Lbl B6
+ClrHome
+Output(1,1,"ID (MA)")
+Output(1,11,round(1000I,4))
+Output(2,1,"VD (V)")
+Output(2,11,round(V,4))
+Output(3,1,"VR (V)")
+Output(3,11,round(IR,4))
+Output(4,1,"PD (MW)")
+Output(4,11,round(1000VI,4))
+If I≤0
+Output(6,1,"DIODE OFF (REVERSE)")
+Pause 
+If G≠1 or I≤0
+Goto M
+ClrHome
+Input "GRAPH? 1=YES ",Z
+If Z≠1
+Goto M
+FnOff 
+PlotsOff 
+ClrDraw
+"S(𝑒^(X/(NW))-1)"→Y₁
+"(E-X)/R"→Y₂
+FnOn 1,2
+0→Xmin
+V+0.3→Xmax
+0.1→Xscl
+⁻0.1I→Ymin
+2I→Ymax
+I/5→Yscl
+Normal
+Float
+DispGraph
+Line(V,0,V,I,1,GRAY)
+Line(0,I,V,I,1,GRAY)
+Pt-On(V,I,2)
+Text(88,4,"Q: VD=",round(V,4)," V")
+Text(100,4,"   ID=",round(1000I,3)," MA")
+Text(112,4,"X: 0 TO ",round(V+0.3,2)," V")
+Text(124,4,"Y MAX=",round(2000I,2)," MA")
+Text(136,4,"BLUE=DIODE RED=LOAD")
+Pause 
+Goto M
+Lbl C
+ClrHome
+Disp "ZENER SHUNT REG"
+Input "VS (V)=",Str1
+π→θ
+prgmDIODE
+Ans→E
+Input "RS (OHM)=",Str1
+π→θ
+prgmDIODE
+Ans→R
+Input "VZ (V)=",Str1
+π→θ
+prgmDIODE
+Ans→Z
+Input "RL (0=OPEN)=",Str1
+π→θ
+prgmDIODE
+Ans→L
+Input "IZMIN (A)=",Str1
+π→θ
+prgmDIODE
+Ans→M
+E→U
+If L>0
+EL/(R+L)→U
+0→B
+If L>0
+Z/L→B
+(E-Z)/R→K
+If U<Z
+Then
+U→O
+(E-U)/R→X
+X→J
+0→Y
+Else
+Z→O
+K→X
+B→J
+X-J→Y
+End
+ClrHome
+Output(1,1,"VOUT (V)")
+Output(1,11,round(O,4))
+Output(2,1,"IS (MA)")
+Output(2,11,round(1000X,4))
+Output(3,1,"IL (MA)")
+Output(3,11,round(1000J,4))
+Output(4,1,"IZ (MA)")
+Output(4,11,round(1000Y,4))
+If U<Z
+Then
+Output(6,1,"ZENER OFF!")
+Else
+If Y<M
+Then
+Output(6,1,"IZ < IZMIN!")
+Else
+Output(6,1,"REGULATING OK")
+End
+End
+Pause 
+ClrHome
+Output(1,1,"PZ (MW)")
+Output(1,11,round(1000ZY,4))
+Output(2,1,"PZ NL (MW)")
+Output(2,11,round(1000ZK,4))
+Output(3,1,"RLMIN OHM")
+Output(4,1,"RSMAX OHM")
+Output(5,1,"VSMIN (V)")
+Output(5,11,round(Z+R(B+M),4))
+If K>M
+Then
+Output(3,11,round(Z/(K-M),4))
+Else
+Output(3,11,"NONE")
+End
+If B+M>0
+Then
+Output(4,11,round((E-Z)/(B+M),4))
+Else
+Output(4,11,"INF")
+End
+Pause 
+Goto M
+Lbl D
+ClrHome
+Menu("RECTIFIER","HALF-WAVE",D1,"FULL-WAVE CT",D2,"BRIDGE",D3)
+Lbl D1
+1→K
+1→J
+Goto D4
+Lbl D2
+1→K
+2→J
+Goto D4
+Lbl D3
+2→K
+2→J
+Lbl D4
+ClrHome
+Input "VRMS SEC(0=PK)=",Str1
+π→θ
+prgmDIODE
+Ans→A
+If A>0
+Then
+A√(2)→P
+Else
+Input "VPEAK (V)=",Str1
+π→θ
+prgmDIODE
+Ans→P
+End
+Input "VD ON (V)=",Str1
+π→θ
+prgmDIODE
+Ans→D
+Input "R LOAD (OHM)=",Str1
+π→θ
+prgmDIODE
+Ans→R
+Input "C (F) 0=NONE=",Str1
+π→θ
+prgmDIODE
+Ans→C
+max(0,P-KD)→O
+If K=2
+Then
+P-D→V
+Else
+P+O→V
+If J=1 and C=0
+P→V
+End
+If C>0
+Goto D5
+JO/π→X
+If J=1
+Then
+O/2→Y
+Else
+O/√(2)→Y
+End
+ClrHome
+Output(1,1,"VO PK (V)")
+Output(1,11,round(O,4))
+Output(2,1,"VDC (V)")
+Output(2,11,round(X,4))
+Output(3,1,"VRMS (V)")
+Output(3,11,round(Y,4))
+Output(4,1,"IDC (MA)")
+Output(4,11,round(1000X/R,4))
+Output(5,1,"PIV (V)")
+Output(5,11,round(V,4))
+If J=2
+Then
+Output(7,1,"F RIPPLE = 2 X F LINE")
+Else
+Output(7,1,"F RIPPLE = F LINE")
+End
+Pause 
+Goto M
+Lbl D5
+Input "F LINE (HZ)=",Str1
+π→θ
+prgmDIODE
+Ans→F
+O/(JFRC)→U
+O-U/2→X
+O/R→I
+√(2U/O)→H
+√(2O/U)/J→Q
+ClrHome
+Output(1,1,"VO PK (V)")
+Output(1,11,round(O,4))
+Output(2,1,"VR PP (V)")
+Output(2,11,round(U,4))
+Output(3,1,"VDC (V)")
+Output(3,11,round(X,4))
+Output(4,1,"IL (MA)")
+Output(4,11,round(1000I,4))
+Output(5,1,"PIV (V)")
+Output(5,11,round(V,4))
+Output(6,1,"F RIP (HZ)")
+Output(6,11,JF)
+Pause 
+ClrHome
+Output(1,1,"COND (DEG)")
+Output(1,11,round(H180/π,4))
+Output(2,1,"T ON (MS)")
+Output(2,11,round(1000H/(2πF),4))
+Output(3,1,"IDAVG (MA)")
+Output(3,11,round(1000I(1+πQ),4))
+Output(4,1,"IDMAX (MA)")
+Output(4,11,round(1000I(1+2πQ),4))
+Pause 
+Goto M
+Lbl F
+ClrHome
+Disp "SMALL-SIGNAL"
+Input "ID DC (A)=",Str1
+π→θ
+prgmDIODE
+Ans→I
+Input "N=",Str1
+π→θ
+prgmDIODE
+Ans→N
+Input "T (C)=",Str1
+π→θ
+prgmDIODE
+Ans→T
+8.617333ᴇ⁻5(T+273.15)→W
+ClrHome
+Output(1,1,"VT (MV)")
+Output(1,11,1000W)
+Output(2,1,"RD (OHM)")
+Output(2,11,NW/I)
+Output(3,1,"GD (MS)")
+Output(3,11,1000I/(NW))
+Pause 
+Goto M
+Lbl Q
+0→θ
+Normal
+ClrHome
+Lbl U
+0→θ
+Str1→Str9
+If length(Str9)>3
+Then
+If sub(Str9,length(Str9)-2,3)="OHM"
+sub(Str9,1,length(Str9)-3)→Str9
+End
+If length(Str9)>2
+Then
+If sub(Str9,length(Str9)-1,2)="HZ"
+sub(Str9,1,length(Str9)-2)→Str9
+End
+If length(Str9)>1
+Then
+If inString("FHVAW",sub(Str9,length(Str9),1))
+sub(Str9,1,length(Str9)-1)→Str9
+End
+1→θ
+If length(Str9)>3
+Then
+If sub(Str9,length(Str9)-2,3)="MEG"
+Then
+1ᴇ6→θ
+sub(Str9,1,length(Str9)-3)→Str9
+End
+End
+If θ=1 and length(Str9)>1
+Then
+inString("PNUMθKθG",sub(Str9,length(Str9),1))→θ
+If θ
+Then
+10^(3(θ-5))→θ
+sub(Str9,1,length(Str9)-1)→Str9
+Else
+1→θ
+End
+End
+θexpr(Str9)→θ
+θ
+Return
