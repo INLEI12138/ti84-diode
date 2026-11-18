@@ -119,6 +119,7 @@ Other TI-84 Plus CE programs by INLEI / INLEI 的其他 TI-84 Plus CE 程序：
 | [FILTER](https://github.com/INLEI12138/ti84-filter) | Passive RLC voltage-divider filter response and Bode plot | 无源 RLC 分压滤波器频率响应与 Bode 图 |
 | [ITER](https://github.com/INLEI12138/ti84-iteration) | Diode bias point by iteration, two-source mode, rd | 二极管工作点迭代求解（含双电源模式）与 rd |
 | [ZFORMULA](https://github.com/INLEI12138/ti84-zformula) | Series / parallel RLC impedance formula reference | 串联/并联 RLC 阻抗公式速查 |
+| [RECT](https://github.com/INLEI12138/ti84-rect) | Rectifier solver (half-wave, center-tapped, bridge) with waveform plot | 整流电路求解（半波、中心抽头、桥式）与波形图 |
 
 ## License / 许可证
 
